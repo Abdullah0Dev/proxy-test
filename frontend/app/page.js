@@ -5,21 +5,24 @@ import { useState } from "react";
 const BackendTest = () => {
   const [speedTest, setSpeedTest] = useState([]);
   const handleSpeedTest = async () => {
-    const response = await axios.post(`http://localhost:4000/speed-test/`, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-        // Accept: "*/*",
-        // Connection: "keep-alive",
-      },
-      body: JSON.stringify({
-        // ipAddress: "188.245.37.125",
-        // port: "7016",
-        imei: "860191063669325",
-        // username: "proxy",
-        // password: "proxy",
-      }),
-    });
+    const response = await axios.post(
+      `https://proxy-test-iqka.onrender.com/speed-test/`,
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+          // Accept: "*/*",
+          // Connection: "keep-alive",
+        },
+        body: JSON.stringify({
+          // ipAddress: "188.245.37.125",
+          // port: "7016",
+          imei: "860191063669325",
+          // username: "proxy",
+          // password: "proxy",
+        }),
+      }
+    );
     setSpeedTest(response?.data);
   };
   return (
