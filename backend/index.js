@@ -16,12 +16,13 @@ const {
   editCredentials,
 } = require("./proxyService");
 const cors = require("cors");
+const { default: axios } = require("axios");
 // Load environment variables
 require("dotenv").config();
 
 const app = express();
 app.use(express.json()); // Enable JSON body parsin
- 
+
 app.use(cors());
 // ! Protect server requests
 // 'http://localhost:5173/, http://localhost:3000/, https://powerproxies.vercel.app, https://powerproxy.io '
@@ -194,16 +195,50 @@ app.get("/ovpn/:portId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// Edit credentials
-app.post("/edit-credentials/:portId", async (req, res) => {
+// Track Website visitors
+app.get("/web-statistics/last-30-days", async (req, res) => {
   try {
-    const portId = req.body;
-    const ovpnLink = await editCredentials(portId);
-    res.json({ downloadUrl: ovpnLink });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const response = await axios.get(
+      "https://checkstat.net/includes/statistics/get_chart_statistics.php?site_id=911&start_date=2024-10-11T00:00:00+03:00&end_date=2024-11-09T23:59:59+02:00&onlyUnique=false&activity=null&limit=300"
+    );
+
+    console.log(`Web analysis`, response.data);
+    return res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
   }
 });
+// device type
+app.get("/web-statistics/device-type", async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://checkstat.net/includes/statistics/get_device_statistics.php?site_id=911&start_date=2024-10-12T00:00:00+03:00&end_date=2024-11-10T23:59:59+02:00&onlyUnique=false&activity=null&limit=8`
+    );
+
+    console.log(`Device type analysis`, response.data);
+    return res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
+  }
+});
+// user country
+app.get("/web-statistics/user-country", async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://checkstat.net/includes/statistics/get_country_statistics.php?site_id=911&start_date=2024-10-12T00:00:00+03:00&end_date=2024-11-10T23:59:59+02:00&onlyUnique=false&activity=null&limit=300`
+    );
+
+    console.log(`user country analysis`, response.data);
+    return res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
+  }
+});
+// when you send a response twice it doesn't work
+// device type: https://checkstat.net/includes/statistics/get_device_statistics.php?site_id=911&start_date=2024-10-11T00:00:00+03:00&end_date=2024-11-09T23:59:59+02:00&onlyUnique=false&activity=null&limit=8
 
 // MongoDB connection and Server start
 const PORT = process.env.PORT || 4000;
